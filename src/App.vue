@@ -44,7 +44,6 @@
 
 <script>
 export default {
-  name: 'app',
   data() {
     return {
       api_key: 'be705611798054ea6e2377559fe6518f',
@@ -262,7 +261,13 @@ body {
 }
 
 #app.warm {
-  background-image: url('./assets/hot-bg.jpg');
+  background-image: url('./assets/sunny-bg.jpg');
+}
+#app.mist {
+  background-image: url('./assets/mist-bg.jpg');
+}
+#app.rain {
+  background-image: url('./assets/rain-bg.jpg');
 }
 
 </style>
