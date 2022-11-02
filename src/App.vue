@@ -31,16 +31,16 @@
             <button @click="unitMeasure='Celsius'">°C</button>
             <button @click="unitMeasure='Fahrenheit'">°F</button>
           </div>
-          <div class="temp">{{ temperatureCalculate }}° {{ unitMeasure }}</div>
+          <div class="temp">{{ temperatureCalculate }}° {{ unitMeasure }} </div>
           <div class="weather-type">{{ weatherCondition }}</div>
-          <div class="humidity"> Humidity: {{ weather.main.humidity }} %</div>
-          <div class="wind"> Wind: {{ weather.wind.speed }} M/S</div>
+          <div class="humidity"> Humidity: {{ weather.main.humidity }}% </div>
+          <div class="wind"> Wind: {{ weather.wind.speed }} m/s </div>
           <div class="sunrise"> Sunrise: {{ unixToTime(weather.sys.sunrise) }} </div>
           <div class="sunset"> Sunset: {{ unixToTime(weather.sys.sunset) }} </div>
         </div>
       </div>
 
-      <div v-else class="error-msg"> ~ City not found ~ </div>
+      <div v-else class="error-msg"> {{ errMsg }} </div>
     </main>
   </div>
 </template>
@@ -57,6 +57,7 @@ export default {
       latitude: '',
       longitude: '',
       weatherCondition: '',
+      errMsg: '',
     }
   },
   created() {
@@ -69,6 +70,12 @@ export default {
   methods: {
     //API call for weather by search input
     fetchWeatherBySearch(e) {
+      let vm = this;
+
+      //Reinitialize their values
+      vm.weather = {};
+      vm.errMsg = '';
+
       if (e.key === "Enter") {
         fetch(`${this.url_base}weather?q=${this.query}&units=metric&APPID=${this.api_key}`)
             .then(res => {
@@ -77,16 +84,48 @@ export default {
       }
     },
 
+    //Gets current location and on success callback fetch the weather for this location.
+    getGeolocation() {
+      let vm = this;
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            position => {
+              vm.latitude = position.coords.latitude;
+              vm.longitude = position.coords.longitude;
+
+              vm.fetchWeatherByGeolocation();
+            },
+            error => {
+              console.log(error.message);
+              vm.errMsg = error.message;
+            });
+      } else {
+        console.log("Your browser does not support geolocation API ")
+      }
+    },
     //API call for weather by Geolocation
     fetchWeatherByGeolocation() {
+      let vm = this;
+
+      //Reinitialize their values
+      vm.errMsg = '';
+
       fetch(`${this.url_base}weather?lat=${this.latitude}&lon=${this.longitude}&limit=5&units=metric&APPID=${this.api_key}`)
           .then(res => {
             return res.json();
           }).then(this.setResults);
     },
 
+    //Sets results after API calls
     setResults(results) {
-      this.weather = results;
+      let vm = this;
+
+      if (results.cod !== "404") {
+        vm.weather = results;
+      } else if (results.cod === "404") {
+        vm.errMsg = results.message;
+      }
     },
 
     //Builds up the date as shown on interface
@@ -112,26 +151,6 @@ export default {
 
       return dtFormat.format(new Date(s * 1e3));
     },
-
-    //Gets current location and on success callback fetch the weather for this location.
-    getGeolocation() {
-      let vm = this;
-
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            position => {
-              vm.latitude = position.coords.latitude;
-              vm.longitude = position.coords.longitude;
-
-              vm.fetchWeatherByGeolocation();
-            },
-            error => {
-              console.log(error.message);
-            });
-      } else {
-        console.log("Your browser does not support geolocation API ")
-      }
-    }
   },
 
   computed: {
@@ -227,8 +246,6 @@ body {
             height: 28px;
           }
         }
-
-
       }
 
       .search-bar {
@@ -326,7 +343,7 @@ body {
       display: flex;
       padding: 30px;
       color: #FFF;
-      font-size: 38px;
+      font-size: 18px;
       font-weight: 500;
       text-align: center;
       text-shadow: 1px 3px rgba(0, 0, 0, 0.25);
