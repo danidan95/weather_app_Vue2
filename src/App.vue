@@ -20,7 +20,7 @@
         </span>
       </div>
 
-      <div class="weather-wrap" v-if="typeof weather.main != 'undefined'">
+      <div class="weather-wrap" v-if="typeof weather.main !== 'undefined'">
         <div class="location-box">
           <div class="location">{{ weather.name }}, {{ weather.sys.country }}</div>
           <div class="date">{{ dateBuilder() }}</div>
@@ -61,6 +61,7 @@ export default {
       timezoneOffset: ''
     }
   },
+
   created() {
     let vm = this;
 
@@ -133,19 +134,20 @@ export default {
 
     //Builds up the date as shown on interface
     dateBuilder() {
-      let d = new Date();
-      let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-      let days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-      let day = days[d.getDay()];
-      let date = d.getDate();
-      let month = months[d.getMonth()];
-      let year = d.getFullYear();
+      const d = new Date();
+      const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const day = days[d.getDay()];
+      const date = d.getDate();
+      const month = months[d.getMonth()];
+      const year = d.getFullYear();
+
       return `${day} ${date} ${month} ${year}`;
     },
 
     //Gets the time in UNIX and converts it into TIME in the timezone that we are searching. (for current location)
     unixToTime(s) {
-      let timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
       const dtFormat = new Intl.DateTimeFormat('en-GB', {
         timeStyle: 'medium',
@@ -156,8 +158,8 @@ export default {
     },
 
     getTimezone() {
-      let vm = this,
-          offset = new Date().getTimezoneOffset();
+      let vm = this;
+      const offset = new Date().getTimezoneOffset();
 
       if (offset<0) {
         console.log("Your timezone is- GMT+" + (offset / -60));
@@ -190,7 +192,7 @@ export default {
     //Calculates temperature on toggle buttons for Celsius or Fahrenheit
     temperatureCalculate() {
       let vm = this,
-          temperature = Math.round(vm.weather.main.temp);
+          temperature = Math.round(vm.weather.main.temp);   //DEFAULT as Celsius
 
       if (vm.unitMeasure === "Fahrenheit") {
         temperature = Math.round((Math.round(vm.weather.main.temp) * 1.8) + 32);
