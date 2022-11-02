@@ -173,7 +173,7 @@ export default {
   },
 
   computed: {
-    //Computes weather type so it will change background according to it
+    //Computes weather type, so it will change background according to it
     getWeatherCondition() {
       let vm = this,
           weather = vm.weather;
