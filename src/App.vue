@@ -35,8 +35,8 @@
           <div class="weather-type">{{ weatherCondition }}</div>
           <div class="humidity"> Humidity: {{ weather.main.humidity }}% </div>
           <div class="wind"> Wind: {{ weather.wind.speed }} m/s </div>
-          <div class="sunrise"> Sunrise: {{ unixToTime(weather.sys.sunrise) }} </div>
-          <div class="sunset"> Sunset: {{ unixToTime(weather.sys.sunset) }} </div>
+          <div class="sunrise"> Sunrise: {{ unixToTime(weather.sys.sunrise) }} {{timezoneOffset}}</div>
+          <div class="sunset"> Sunset: {{ unixToTime(weather.sys.sunset) }} {{timezoneOffset}}</div>
         </div>
       </div>
 
@@ -58,6 +58,7 @@ export default {
       longitude: '',
       weatherCondition: '',
       errMsg: '',
+      timezoneOffset: ''
     }
   },
   created() {
@@ -65,6 +66,7 @@ export default {
 
     //Get geolocation on creation of Vue App and on callback get weather for that location.
     vm.getGeolocation();
+    vm.getTimezone();
   },
 
   methods: {
@@ -101,7 +103,8 @@ export default {
               vm.errMsg = error.message;
             });
       } else {
-        console.log("Your browser does not support geolocation API ")
+        console.log("Your browser does not support geolocation API");
+        vm.errMsg = "Your browser does not support geolocation API";
       }
     },
     //API call for weather by Geolocation
@@ -151,6 +154,19 @@ export default {
 
       return dtFormat.format(new Date(s * 1e3));
     },
+
+    getTimezone() {
+      let offset = new Date().getTimezoneOffset();
+
+      if (offset<0) {
+        console.log("Your timezone is- GMT+" + (offset / -60));
+        this.timezoneOffset = '(GMT+' + offset/-60 + ')';
+      } else {
+        console.log( "Your timezone is- GMT-" + offset/60);
+        // console.log( "Your timezone is- GMT-" + Math.floor(offset/60)+":"+extraZero+(offset%60));
+        this.timezoneOffset = '(GMT-' + offset/60 + ')';
+      }
+    }
   },
 
   computed: {
