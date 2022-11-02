@@ -79,10 +79,10 @@ export default {
       vm.errMsg = '';
 
       if (e.key === "Enter") {
-        fetch(`${this.url_base}weather?q=${this.query}&units=metric&APPID=${this.api_key}`)
+        fetch(`${vm.url_base}weather?q=${vm.query}&units=metric&APPID=${vm.api_key}`)
             .then(res => {
               return res.json();
-            }).then(this.setResults);
+            }).then(vm.setResults);
       }
     },
 
@@ -114,10 +114,10 @@ export default {
       //Reinitialize their values
       vm.errMsg = '';
 
-      fetch(`${this.url_base}weather?lat=${this.latitude}&lon=${this.longitude}&limit=5&units=metric&APPID=${this.api_key}`)
+      fetch(`${vm.url_base}weather?lat=${vm.latitude}&lon=${vm.longitude}&limit=5&units=metric&APPID=${vm.api_key}`)
           .then(res => {
             return res.json();
-          }).then(this.setResults);
+          }).then(vm.setResults);
     },
 
     //Sets results after API calls
@@ -156,15 +156,16 @@ export default {
     },
 
     getTimezone() {
-      let offset = new Date().getTimezoneOffset();
+      let vm = this,
+          offset = new Date().getTimezoneOffset();
 
       if (offset<0) {
         console.log("Your timezone is- GMT+" + (offset / -60));
-        this.timezoneOffset = '(GMT+' + offset/-60 + ')';
+        vm.timezoneOffset = '(GMT+' + offset/-60 + ')';
       } else {
         console.log( "Your timezone is- GMT-" + offset/60);
         // console.log( "Your timezone is- GMT-" + Math.floor(offset/60)+":"+extraZero+(offset%60));
-        this.timezoneOffset = '(GMT-' + offset/60 + ')';
+        vm.timezoneOffset = '(GMT-' + offset/60 + ')';
       }
     }
   },
