@@ -5,7 +5,7 @@
         <input
             type="text"
             class="search-bar"
-            placeholder="Search weather for your location..."
+            placeholder="Search weather for your city..."
             v-model="query"
             @keypress="fetchWeatherBySearch"
         />
@@ -32,13 +32,15 @@
             <button @click="unitMeasure='Fahrenheit'">°F</button>
           </div>
           <div class="temp">{{ temperatureCalculate }}° {{ unitMeasure }}</div>
-          <div class="weather-type">{{ weather.weather[0].main }}</div>
+          <div class="weather-type">{{ weatherCondition }}</div>
           <div class="humidity"> Humidity: {{ weather.main.humidity }} %</div>
           <div class="wind"> Wind: {{ weather.wind.speed }} M/S</div>
           <div class="sunrise"> Sunrise: {{ unixToTime(weather.sys.sunrise) }} </div>
           <div class="sunset"> Sunset: {{ unixToTime(weather.sys.sunset) }} </div>
         </div>
       </div>
+
+      <div v-else class="error-msg"> ~ City not found ~ </div>
     </main>
   </div>
 </template>
@@ -53,7 +55,8 @@ export default {
       unitMeasure: 'Celsius',
       weather: {},
       latitude: '',
-      longitude: ''
+      longitude: '',
+      weatherCondition: '',
     }
   },
   created() {
@@ -135,12 +138,17 @@ export default {
     //Computes weather type so it will change background according to it
     getWeatherCondition() {
       let vm = this,
-          weather = vm.weather,
-          weatherCondition = '';
+          weather = vm.weather;
 
-      weatherCondition = weather.weather[0].main;
+      if (weather.weather !== undefined) {
+        weather.weather.forEach(function (wtr) {
+          vm.weatherCondition = wtr.main;
+        })
+      }
 
-      return weatherCondition;
+      // weatherCondition = weather.weather[0].main;
+
+      return vm.weatherCondition;
     },
 
     //Calculates temperature on toggle buttons for Celsius or Fahrenheit
@@ -312,6 +320,16 @@ body {
         text-shadow: 1px 3px rgba(0, 0, 0, 0.25);
         padding: 1px 0;
       }
+    }
+
+    .error-msg {
+      display: flex;
+      padding: 30px;
+      color: #FFF;
+      font-size: 38px;
+      font-weight: 500;
+      text-align: center;
+      text-shadow: 1px 3px rgba(0, 0, 0, 0.25);
     }
   }
 }
